@@ -16,38 +16,9 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     </head>
     <body>
-
-        <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">My store</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="collapsibleNavbar">
-                    <ul class="navbar-nav me-auto">
-
-                        <li class="nav-item">
-                            <a class="nav-link" href="<c:url value="/" />">Trang chủ</a>
-                        </li>
-
-                        <c:forEach items="${categories}" var="c"> 
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">${c.name}</a>
-                            </li>
-                        </c:forEach>
-                    </ul>
-
-                    <form action="<c:url value="/" />" class="d-flex">
-                        <input class="form-control me-2" name="kw" type="text" placeholder="Nhập tên sản phẩm">
-                        <button class="btn btn-primary" type="submit">Tìm</button>
-                    </form>
-
-                </div>
-            </div>
-        </nav>
         <section class="container">
             <h1 class="text-center text-info mt-1">Danh Mục Sản Phẩm</h1>
-            <a href="#" class="btn btn-success mb-1">Thêm sản phẩm </a>
+            <a href="<c:url value="/products" />" class="btn btn-success mb-1">Thêm sản phẩm </a>
             <table class="table .table-striped">
                 <tr>
                     <th></th>
@@ -60,11 +31,14 @@
                     <tr>
                         <td><img class="rounded img-fluid" src="${p.image}" width="200" alt="${p.name}"></td>
                         <td>${p.id}</td>
-                        <td>${p.name} VNĐ</td>
+                        <td>${p.name}</td>
                         <td>${p.price} VNĐ</td>
+                        
                         <td>
                             <button class="btn btn-danger">Xóa</button>
-                            <a href="#" class="btn btn-info">Cập nhật</a>
+                            
+                            <c:url value="/products/${p.id}" var="url"/>                            
+                            <a href="${url}" class="btn btn-info">Cập nhật</a>
                         </td>
                     </tr>
                 </c:forEach>

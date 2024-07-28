@@ -17,5 +17,9 @@ public interface ProductRepository {
     public List<Product> getProducts(Map<String, String> params);
 
     public void addOrUpdate(Product p);
+        
+    Product getProductById(int id);
+    
+    
 
 }

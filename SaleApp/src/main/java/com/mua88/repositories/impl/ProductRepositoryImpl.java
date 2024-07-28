@@ -29,13 +29,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 @PropertySource("classpath:configs.properties")
-public class ProductRepositoryImpl implements ProductRepository{
-    
+public class ProductRepositoryImpl implements ProductRepository {
+
     @Autowired
     private LocalSessionFactoryBean factory;
     @Autowired
     private Environment env;
-    
+
     public List<Product> getProducts(Map<String, String> params) {
         Session s = this.factory.getObject().getCurrentSession();
         CriteriaBuilder b = s.getCriteriaBuilder();
@@ -43,48 +43,62 @@ public class ProductRepositoryImpl implements ProductRepository{
         Root root = q.from(Product.class);
         if (params != null) {
             List<Predicate> predicates = new ArrayList<>();
-            
+
             String kw = params.get("kw");
             if (kw != null && !kw.isEmpty()) {
                 predicates.add(b.like(root.get("name"), String.format("%%%s%%", kw)));
             }
-            
+
             String fromPrice = params.get("fromPrice");
             if (fromPrice != null && !fromPrice.isEmpty()) {
                 predicates.add(b.greaterThanOrEqualTo(root.get("price"), Double.parseDouble(fromPrice)));
             }
-            
+
             String toPrice = params.get("toPrice");
             if (toPrice != null && !toPrice.isEmpty()) {
                 predicates.add(b.lessThanOrEqualTo(root.get("price"), Double.parseDouble(toPrice)));
             }
-            
+
             String cateId = params.get("cateId");
             if (cateId != null && !cateId.isEmpty()) {
                 predicates.add(b.equal(root.get("categoryId"), Integer.parseInt(cateId)));
             }
-            
+
             q.where(predicates.toArray(Predicate[]::new));
         }
         q.orderBy(b.desc(root.get("id")));
         Query query = s.createQuery(q);
-        
-        
+
         String p = params.get("page");
-        if(p != null && !p.isEmpty()){
+        if (p != null && !p.isEmpty()) {
             int pagesize = Integer.parseInt(env.getProperty("products.pagesize").toString());
             int start = (Integer.parseInt(p) - 1) * pagesize;
             query.setFirstResult(start);
             query.setMaxResults(pagesize);
         }
-        
+
         List<Product> products = query.getResultList();
-        
+
         return products;
     }
-    
+
     public void addOrUpdate(Product p) {
         Session s = this.factory.getObject().getCurrentSession();
-        s.saveOrUpdate(p);
+        if (p.getId() != null) {
+            s.update(p);
+        } else {
+            s.save(p);
+        }
+    }
+
+//    public void delete(Product p) {
+//        Session s = this.factory.getObject().getCurrentSession();
+//        s.delete(p);
+//    }
+
+    @Override
+    public Product getProductById(int id) {
+        Session s = this.factory.getObject().getCurrentSession();
+        return s.get(Product.class, id);
     }
 }
